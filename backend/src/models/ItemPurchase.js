@@ -3,9 +3,15 @@ const mongoosePaginate = require('mongoose-paginate');
 
 const ItemPurchaseSchema = new mongoose.Schema({
     item_id:[
-        {
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'Items'
+        {   
+            id:{
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: 'Items',
+            },
+            quantity:{
+                type:Number,
+                required:true
+            }
         }
     ],
     purchase_id:[
@@ -14,10 +20,6 @@ const ItemPurchaseSchema = new mongoose.Schema({
             ref: 'Purchases'
         }
     ],
-    quantity:{
-        type:Number,
-        required:true
-    },
     createdAt: {
         type: Date,
         deafult: Date.now,

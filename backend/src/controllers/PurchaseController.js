@@ -36,10 +36,14 @@ module.exports = {
     },
 
     async listItems(req, res){
+        try {
         const { page = 1 } = req.query;
-        const itemPurchase = await ItemPurchase.find({purchase_id: req.params.id}).populate('item_id').select('item_id');
-
+        const itemPurchase = await ItemPurchase.find({purchase_id: req.params.id}).populate('item_id.id').select('item_id');
+        
         return res.json(itemPurchase);
+        } catch (error) {
+            return res.json(error);
+        }
     },
 
     async manageItems(req, res){

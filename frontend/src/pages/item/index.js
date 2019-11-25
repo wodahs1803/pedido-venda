@@ -60,10 +60,13 @@ state = {
         const { items, page, itemInfo } = this.state;
 
     return (
-        <Card body>
+        <Card>
+        <Card.Header><h3>Produtos</h3></Card.Header>
+        <Card.Body>
             <div className="row justify-content-end">
-            <Link className="btn btn-primary mr-3 mb-3" to="/item/create"><FaPlusCircle className="mr-1 mb-1" />Criar</Link>
+            <Link className="btn btn-outline-primary mr-3 mb-3" to="/item/create"><FaPlusCircle className="mr-1 mb-1" />Criar</Link>
             </div>
+            <div style={{overflowX: "auto"}}>
             <Table striped bordered hover className="w-100" style={{textAlign: "center"}}>
                 <thead>
                     <tr>
@@ -78,20 +81,20 @@ state = {
                       <td>{item.name}</td>
                       <td>{item.price}</td>
                       <td>
-                            <Link className="btn btn-warning mr-5" to={`/item/${item._id}`}>Editar</Link>
-                            <Link className="btn btn-danger mr-5" onClick={() => this.deleteItem(item._id)}>Excluir</Link>
-                            
+                            <Link className="btn btn-outline-warning mr-5 mb-1" to={`/item/${item._id}`}>Editar</Link>
+                            <Link className="btn btn-outline-danger mr-5 mb-1" onClick={() => this.deleteItem(item._id)}>Excluir</Link>
                         </td>
                     </tr>
                 </tbody>
                 ))}
             </Table>
-            <div className="row justify-content-between mt-3">
-                <Button className="ml-3" variant="info" disabled={page === 1} onClick={this.prevPage}><FaArrowLeft className="mr-1 mb-1" />Anterior</Button>
-                <Button className="mr-3" variant="info" disabled={page === itemInfo.pages} onClick={this.nextPage}>Próximo<FaArrowRight className="ml-1 mb-1" /></Button>
             </div>
+            <div className="row justify-content-between mt-3">
+                <Button className="ml-3 mr-3 mb-1" variant="outline-info" disabled={page === 1} onClick={this.prevPage}><FaArrowLeft className="mr-1 mb-1" />Anterior</Button>
+                <Button className="ml-3 mr-3 mb-1" variant="outline-info" disabled={page === itemInfo.pages} onClick={this.nextPage}>Próximo<FaArrowRight className="ml-1 mb-1" /></Button>
+            </div>
+        </Card.Body>
         </Card>
-        
     )
     }
 }
@@ -139,7 +142,7 @@ export class ItemCreate extends Component{
                         <Form.Label>Preço</Form.Label>
                         <Form.Control type="number" step="0.01" placeholder="Insira o preço" onChange={this.onChangePrice}/>
                     </Form.Group>
-                    <Button variant="primary" type="submit">
+                    <Button variant="outline-primary" type="submit">
                         <FaPlusCircle className="mr-1 mb-1" />Criar
                     </Button>
                 </Form>
@@ -178,7 +181,6 @@ export class ItemForm extends Component{
 
     async handleSubmit(e) {
         api.put(`/item/${this.state.id}`, {name: this.state.name, price: this.state.price}).then(alert('Produto Atualizado com Sucesso'));
-        // await this.props.history.push('/item');
         this.setState({redirect: true});
     }
 
@@ -201,7 +203,7 @@ export class ItemForm extends Component{
                     <Form.Label>Preço</Form.Label>
                     <Form.Control value={data.price} type="number" step="0.01" placeholder="Insira o preço" onChange={this.onChangePrice}/>
                 </Form.Group>
-                <Button variant="primary" type="submit">
+                <Button variant="outline-primary" type="submit">
                     <FaSave className="mr-1 mb-1" />Atualizar
                 </Button>
             </Form>

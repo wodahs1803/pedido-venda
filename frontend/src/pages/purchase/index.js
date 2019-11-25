@@ -3,6 +3,7 @@ import api from '../../services/api';
 import {Link, Redirect} from 'react-router-dom';
 import {Card, Button, Table, Form} from 'react-bootstrap/';
 import { FaArrowRight, FaArrowLeft, FaPlusCircle, FaSave } from 'react-icons/fa';
+import { isNull } from 'util';
 
 export class Purchase extends Component{
 state = {
@@ -60,10 +61,13 @@ state = {
         const { purchases, page, purchaseInfo } = this.state;
 
     return (
-        <Card body>
+        <Card>
+        <Card.Header><h3>Pedidos</h3></Card.Header>
+        <Card.Body>
             <div className="row justify-content-end">
-            <Link className="btn btn-primary mr-3 mb-3" to="/purchase/create"><FaPlusCircle className="mr-1 mb-1" />Criar</Link>
+            <Link className="btn btn-outline-primary mr-3 mb-3" to="/purchase/create"><FaPlusCircle className="mr-1 mb-1" />Criar</Link>
             </div>
+            <div style={{overflowX: "auto"}}>
             <Table striped bordered hover className="w-100" style={{textAlign: "center"}}>
                 <thead>
                     <tr>
@@ -78,18 +82,20 @@ state = {
                         <td>{purchase.client}</td>
                         <td>{purchase.address}</td>
                         <td>
-                        <Link className="btn btn-warning mr-5" to={`/purchase/${purchase._id}`}>Editar</Link>
-                        <Link className="btn btn-danger mr-5" onClick={() => this.deletePurchase(purchase._id)}>Excluir</Link>
-                        <Link className="btn btn-success mr-5" to={`/purchase/list/${purchase._id}`}>Compra</Link>
+                        <Link className="btn btn-outline-warning mr-5 mb-1" to={`/purchase/${purchase._id}`}>Editar</Link>
+                        <Link className="btn btn-outline-danger mr-5 mb-1" onClick={() => this.deletePurchase(purchase._id)}>Excluir</Link>
+                        <Link className="btn btn-outline-success mr-5 mb-1" to={`/purchase/list/${purchase._id}`}>Compra</Link>
                         </td>
                     </tr>
                 </tbody>
                 ))}
             </Table>
-            <div className="row justify-content-between">
-                <Button className="ml-3" variant="info" disabled={page === 1} onClick={this.prevPage}><FaArrowLeft className="mr-1" />Anterior</Button>
-                <Button className="mr-3" variant="info" disabled={page === purchaseInfo.pages} onClick={this.nextPage}>Próximo<FaArrowRight className="ml-1" /></Button>
             </div>
+            <div className="row justify-content-between">
+                <Button className="ml-3 mr-3 mb-1" variant="outline-info" disabled={page === 1} onClick={this.prevPage}><FaArrowLeft className="mr-1" />Anterior</Button>
+                <Button className="ml-3 mr-3 mb-1" variant="outline-info" disabled={page === purchaseInfo.pages} onClick={this.nextPage}>Próximo<FaArrowRight className="ml-1" /></Button>
+            </div>
+        </Card.Body>
         </Card>
     )
     }
@@ -138,7 +144,7 @@ export class PurchaseCreate extends Component{
                     <Form.Label>Endereço</Form.Label>
                     <Form.Control type="text" placeholder="Insira o Endereço" onChange={this.onChangeAddress}/>
                 </Form.Group>
-                <Button variant="primary" type="submit">
+                <Button variant="outline-primary" type="submit">
                     <FaPlusCircle className="mr-1 mb-1" />Criar
                 </Button>
             </Form>
@@ -198,7 +204,7 @@ export class PurchaseForm extends Component{
                     <Form.Label>Endereço</Form.Label>
                     <Form.Control value={data.address} type="text" placeholder="Insira o Endereço" onChange={this.onChangeAddress}/>
                 </Form.Group>
-                <Button variant="primary" type="submit">
+                <Button variant="outline-primary" type="submit">
                     <FaSave className="mr-1 mb-1" />Atualizar
                 </Button>
             </Form>
@@ -209,28 +215,22 @@ export class PurchaseForm extends Component{
 
 export class PurchaseList extends Component{
 
-    state = {
-        purchases: [],
-        purchaseInfo: {},
-        page: 1,
-    }
+    constructor(props){
+        super(props);
+        this.state = {purchases: [], redirect:false};
+    } 
     
         componentDidMount() {
             this.loadpurchases();
-        }
-
-        componentDidUpdate() {
-            this.loadpurchases();
+            
         }
     
         loadpurchases = async (page = 1) => {
-            const response = await api.get(`/purchase/list/?page=${page}`);
-    
-            const { docs, ...purchaseInfo } = response.data;
-    
-            this.setState({ purchases: docs, purchaseInfo, page  });
-    
-            console.log(response.data);
+            const { id } = this.props.match.params;
+            const response = await api.get(`/purchase/list/${id}?page=${page}`);
+            this.setState({ purchases: response.data[0].item_id  });
+            // console.log(this.state.purchases);
+            // console.log(response.data[0].item_id);
         };
     
         prevPage = () => {
@@ -253,42 +253,37 @@ export class PurchaseList extends Component{
             this.loadpurchases(pageNumber);
         }
     
-        async deletePurchase(id){
-            if(window.confirm('Deseja Excluir esta Compra?')){
-                await api.delete(`purchase/${id}`);
-                this.loadpurchases();
-            }
-        }
-    
         render(){
-            const { purchases, page, purchaseInfo } = this.state;
+            const { purchases } = this.state;
     
         return (
             <Card body>
-                <div className="row justify-content-end">
-                <Link className="btn btn-primary mr-3 mb-3" to="/purchase/create"><FaPlusCircle className="mr-1 mb-1" />Criar</Link>
-                </div>
+                <div>
+                    <Link className="btn btn-outline-primary mb-2" to="/purchase">
+                        <FaArrowLeft className="mr-1 mb-1" />Voltar
+                        </Link>
+                    </div>
+                <div style={{overflowX: "auto"}}>
                 <Table striped bordered hover className="w-100" style={{textAlign: "center"}}>
                     <thead>
                         <tr>
                           <th>Item</th>
                           <th>Preço</th>
+                          <th>Quantidade</th>
+                          <th>Preço Total</th>
                         </tr>
                     </thead>
                     {purchases.map(purchase => (
                     <tbody key={purchase._id}>
                         <tr>
-                            <td>{purchase.client}</td>
-                            <td>{purchase.address}</td>
-                            <td>
-                            </td>
+                            <td>{purchase.id.name}</td>
+                            <td>${purchase.id.price}</td>
+                            <td>{purchase.quantity}</td>
+                            <td>${purchase.id.price * purchase.quantity}</td>
                         </tr>
                     </tbody>
                     ))}
                 </Table>
-                <div className="row justify-content-between">
-                    <Button className="ml-3" variant="info" disabled={page === 1} onClick={this.prevPage}><FaArrowLeft className="mr-1" />Anterior</Button>
-                    <Button className="mr-3" variant="info" disabled={page === purchaseInfo.pages} onClick={this.nextPage}>Próximo<FaArrowRight className="ml-1" /></Button>
                 </div>
             </Card>
         )
