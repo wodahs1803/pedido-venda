@@ -3,7 +3,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 
 const Header = () => (
-    <Navbar style={{ backgroundColor: '#220052' }} variant="dark">
+    <Navbar sticky="top" style={{ backgroundColor: '#220052' }} variant="dark">
         <Navbar.Brand href="/">Home</Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-end">

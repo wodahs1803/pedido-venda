@@ -2,18 +2,22 @@ import React from 'react';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
 
 import Main from './pages/main';
-import Item from './pages/item';
-import ItemForm from './pages/itemForm';
-import Purchase from './pages/purchase';
+import { Item, ItemForm, ItemCreate } from './pages/item';
+import { Purchase, PurchaseForm, PurchaseCreate, PurchaseList } from './pages/purchase';
 
 const Routes = () => (
     <BrowserRouter>
         <Switch>
             <Route exact path="/" component={Main} />
+            {/* Produto */}
             <Route exact path="/item" component={Item} />
-            <Route path="/purchase"component={Purchase} />
-            <Route path="/item/:id" component={ItemForm} />
-            <Route path="/item/del/:id" component={Item} />
+            <Route exact path="/item/create" component={ItemCreate} />
+            <Route exact path="/item/:id" component={ItemForm} />
+            {/* Compra */}
+            <Route exact path="/purchase"component={Purchase} />
+            <Route exact path="/purchase/create" component={PurchaseCreate} />
+            <Route exact path="/purchase/:id" component={PurchaseForm} />
+            <Route exact path="/purchase/list/:id" component={PurchaseList} />
         </Switch>
     </BrowserRouter>
 );
