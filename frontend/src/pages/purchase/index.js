@@ -2,7 +2,11 @@ import React, {Component} from 'react';
 import api from '../../services/api';
 import {Link, Redirect} from 'react-router-dom';
 import {Card, Button, Table, Form} from 'react-bootstrap/';
-import { FaArrowRight, FaArrowLeft, FaPlusCircle, FaSave } from 'react-icons/fa';
+import {
+        FaArrowRight, FaArrowLeft, FaPlusCircle, 
+        FaSave, FaPortrait, FaPencilAlt, 
+        FaTrashAlt, FaShoppingCart, FaCartPlus, FaHammer
+        } from 'react-icons/fa';
 
 export class Purchase extends Component{
 state = {
@@ -62,10 +66,13 @@ state = {
 
     return (
         <Card>
-        <Card.Header><h3>Pedidos</h3></Card.Header>
+        <Card.Header><h3><FaPortrait className="mr-1 mb-1" />Pedidos</h3></Card.Header>
         <Card.Body>
-            <div className="row justify-content-end">
-            <Link className="btn btn-outline-primary mr-3 mb-3" to="/purchase/create"><FaPlusCircle className="mr-1 mb-1" />Criar</Link>
+            <div className="row justify-content-between mr-1 ml-1 mb-3">
+            <Link className="btn btn-outline-secondary" to="/">
+                    <FaArrowLeft className="mr-1 mb-1" />Voltar
+                    </Link>
+            <Link className="btn btn-outline-primary" to="/purchase/create"><FaPlusCircle className="mr-1 mb-1" />Criar</Link>
             </div>
             <div style={{overflowX: "auto"}}>
             <Table striped bordered hover className="w-100" style={{textAlign: "center"}}>
@@ -82,10 +89,18 @@ state = {
                         <td>{purchase.client}</td>
                         <td>{purchase.address}</td>
                         <td>
-                        <Link className="btn btn-outline-warning mr-5 mb-1" to={`/purchase/${purchase._id}`}>Editar</Link>
-                        <Link className="btn btn-outline-danger mr-5 mb-1" onClick={() => this.deletePurchase(purchase._id)}>Excluir</Link>
-                        <Link className="btn btn-outline-success mr-5 mb-1" to={`/purchase/list/${purchase._id}`}>Compra</Link>
-                        <Link className="btn btn-outline-primary mr-5 mb-1" to={`/purchase/add/${purchase._id}`}>Cadastrar Itens</Link>
+                        <Link className="btn btn-outline-warning mr-5 mb-1" to={`/purchase/${purchase._id}`}>
+                            <FaPencilAlt className="mr-1 mb-1" />Editar
+                            </Link>
+                        <Link className="btn btn-outline-danger mr-5 mb-1" onClick={() => this.deletePurchase(purchase._id)}>
+                            <FaTrashAlt className="mr-1 mb-1" />Excluir
+                            </Link>
+                        <Link className="btn btn-outline-success mr-5 mb-1" to={`/purchase/list/${purchase._id}`}>
+                            <FaShoppingCart className="mr-1 mb-1" />Compra
+                            </Link>
+                        <Link className="btn btn-outline-primary mr-5 mb-1" to={`/purchase/add/${purchase._id}`}>
+                            <FaCartPlus className="mr-1 mb-1" />Cadastrar Itens
+                            </Link>
                         </td>
                     </tr>
                 </tbody>
@@ -145,9 +160,14 @@ export class PurchaseCreate extends Component{
                     <Form.Label>Endereço</Form.Label>
                     <Form.Control type="text" placeholder="Insira o Endereço" onChange={this.onChangeAddress}/>
                 </Form.Group>
-                <Button variant="outline-primary" type="submit">
+                <div className="row ml-1 mr-1 mt-2">
+                <Link className="btn btn-outline-secondary mb-1" to="/purchase">
+                    <FaArrowLeft className="mr-1 mb-1" />Voltar
+                    </Link>
+                <Button variant="outline-primary ml-1 mb-1" type="submit">
                     <FaPlusCircle className="mr-1 mb-1" />Criar
                 </Button>
+                </div>
             </Form>
         </Card>
     )
@@ -205,9 +225,14 @@ export class PurchaseForm extends Component{
                     <Form.Label>Endereço</Form.Label>
                     <Form.Control value={data.address} type="text" placeholder="Insira o Endereço" onChange={this.onChangeAddress}/>
                 </Form.Group>
-                <Button variant="outline-primary" type="submit">
+                <div className="row ml-1 mr-1 mt-2">
+                <Link className="btn btn-outline-secondary mb-1" to="/purchase">
+                    <FaArrowLeft className="mr-1 mb-1" />Voltar
+                    </Link>
+                <Button variant="outline-primary ml-1 mb-1" type="submit">
                     <FaSave className="mr-1 mb-1" />Atualizar
                 </Button>
+                </div>
             </Form>
         </Card>
     )
@@ -260,7 +285,7 @@ export class PurchaseList extends Component{
         return (
             <Card body>
                 <div>
-                    <Link className="btn btn-outline-primary mb-2" to="/purchase">
+                    <Link className="btn btn-outline-secondary mb-2" to="/purchase">
                         <FaArrowLeft className="mr-1 mb-1" />Voltar
                         </Link>
                     </div>
@@ -298,8 +323,15 @@ export class PurchaseAdd extends Component{
         this.state = {
             id: this.props.match.params,
             items: [],
+            purchase:{
+                item: [''],
+                quantity: ['']
+            },
             redirect:false
         };
+        this.onChangeItem = this.onChangeItem.bind(this);
+        this.onChangeQuantity = this.onChangeQuantity.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     } 
     
         componentDidMount() {
@@ -315,20 +347,47 @@ export class PurchaseAdd extends Component{
             console.log(response.data);
             // console.log(response.data[0]);
             // console.log(this.state.purchases);
-        };
+        }; 
+    
+        onChangeItem(e, i){
+            this.setState({
+                purchase:{
+                    item: e.target.value
+                }
+            });
+        }
+
+        onChangeQuantity(e, i){
+            this.setState({
+                purchase:{
+                    quantity: e.target.value
+                }
+            });
+        }
+    
+        async handleSubmit(e) {
+            console.log(e.target);
+            console.log(this.state.purchase);
+            console.log(this.state.purchase.item);
+            console.log(this.state.purchase.quantity);
+            // api.put(`/purchase/${this.state.id}`, {client: this.state.client, address: this.state.address}).then(alert('Pedido Atualizado com Sucesso'));
+            // this.setState({redirect: true});
+        }
     
         render(){
             const { items } = this.state;
     
         return (
-            <Card body>
-                <div>
-                    <Link className="btn btn-outline-primary mb-2" to="/purchase">
+            <Card>
+            <Card.Header><h1><b><FaHammer className="mr-2 mb-2" />EM CONSTRUÇÃO</b></h1></Card.Header>
+            <Card.Body>
+                <div className="row justify-content-between ml-1 mr-1 mt-2 mb-2">
+                    <Link className="btn btn-outline-secondary mb-1" to="/purchase">
                         <FaArrowLeft className="mr-1 mb-1" />Voltar
                         </Link>
                     </div>
                 <Card body>
-                    <Form>
+                    <Form onSubmit={this.handleSubmit}>
                         {items.map((item,index) => (
                           <div key={item._id} className="mb-3">
                             <div className="row">
@@ -337,14 +396,20 @@ export class PurchaseAdd extends Component{
                               name={`item[${index}]`}
                               type={'checkbox'}
                               id={item._id}
+                              value={item._id}
                               label={item.name}
-                            />
-                            <Form.Control name={`quantity[${index}]`} type="number" placeholder="Quantidade"/>
+                              onChange={(event) => this.onChangeItem(event,index)}/>
+                            <Form.Control name={`quantity[${index}]`} type="number" placeholder="Quantidade"
+                            onChange={(event) => this.onChangeQuantity(event,index)}/>
                             </div>
                           </div>
                         ))}
+                        <Button disabled="true" variant="outline-primary mb-1" type="submit">
+                            <FaCartPlus className="mr-1 mb-1" />Cadastrar
+                        </Button>
                     </Form>
                     </Card>
+            </Card.Body>
             </Card>
             )
         }

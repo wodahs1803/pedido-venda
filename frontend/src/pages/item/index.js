@@ -2,7 +2,10 @@ import React, {Component} from 'react';
 import api from '../../services/api';
 import {Link, Redirect} from 'react-router-dom';
 import {Card, Button, Table, Form} from 'react-bootstrap/';
-import { FaArrowRight, FaArrowLeft, FaPlusCircle, FaSave } from 'react-icons/fa';
+import { FaArrowRight, FaArrowLeft, FaPlusCircle, 
+         FaSave, FaShoppingCart, FaPencilAlt, 
+         FaTrashAlt 
+} from 'react-icons/fa';
 
 export class Item extends Component{
 state = {
@@ -62,10 +65,15 @@ state = {
 
     return (
         <Card>
-        <Card.Header><h3>Produtos</h3></Card.Header>
+        <Card.Header><h3><FaShoppingCart className="mr-1 mb-1" />Produtos</h3></Card.Header>
         <Card.Body>
-            <div className="row justify-content-end">
-            <Link className="btn btn-outline-primary mr-3 mb-3" to="/item/create"><FaPlusCircle className="mr-1 mb-1" />Criar</Link>
+            <div className="row justify-content-between ml-1 mr-1 mb-3">
+                <Link className="btn btn-outline-secondary mb-1" to="/">
+                    <FaArrowLeft className="mr-1 mb-1" />Voltar
+                    </Link>
+                <Link className="btn btn-outline-primary mb-1" to="/item/create">
+                    <FaPlusCircle className="mr-1 mb-1" />Criar
+                    </Link>
             </div>
             <div style={{overflowX: "auto"}}>
             <Table striped bordered hover className="w-100" style={{textAlign: "center"}}>
@@ -82,8 +90,12 @@ state = {
                       <td>{item.name}</td>
                       <td>{item.price}</td>
                       <td>
-                            <Link className="btn btn-outline-warning mr-5 mb-1" to={`/item/${item._id}`}>Editar</Link>
-                            <Link className="btn btn-outline-danger mr-5 mb-1" onClick={() => this.deleteItem(item._id)}>Excluir</Link>
+                            <Link className="btn btn-outline-warning mr-5 mb-1" to={`/item/${item._id}`}>
+                                <FaPencilAlt className="mr-1 mb-1" />Editar
+                                </Link>
+                            <Link className="btn btn-outline-danger mr-5 mb-1" onClick={() => this.deleteItem(item._id)}>
+                                <FaTrashAlt className="mr-1 mb-1" />Excluir
+                                </Link>
                         </td>
                     </tr>
                 </tbody>
@@ -143,9 +155,14 @@ export class ItemCreate extends Component{
                         <Form.Label>Preço</Form.Label>
                         <Form.Control type="number" step="0.01" placeholder="Insira o preço" onChange={this.onChangePrice}/>
                     </Form.Group>
-                    <Button variant="outline-primary" type="submit">
+                    <div className="row mr-1 ml-1 mt-2">
+                    <Link className="btn btn-outline-secondary mb-1" to="/item">
+                        <FaArrowLeft className="mr-1 mb-1" />Voltar
+                    </Link>
+                    <Button variant="outline-primary ml-1 mb-1" type="submit">
                         <FaPlusCircle className="mr-1 mb-1" />Criar
                     </Button>
+                    </div>
                 </Form>
             </Card>
         )
@@ -204,9 +221,14 @@ export class ItemForm extends Component{
                     <Form.Label>Preço</Form.Label>
                     <Form.Control value={data.price} type="number" step="0.01" placeholder="Insira o preço" onChange={this.onChangePrice}/>
                 </Form.Group>
-                <Button variant="outline-primary" type="submit">
-                    <FaSave className="mr-1 mb-1" />Atualizar
-                </Button>
+                <div className="row mr-1 ml-1 mt-2">
+                    <Link className="btn btn-outline-secondary mb-1" to="/item">
+                        <FaArrowLeft className="mr-1 mb-1" />Voltar
+                    </Link>
+                    <Button variant="outline-primary ml-1 mb-1" type="submit">
+                        <FaSave className="mr-1 mb-1" />Atualizar
+                    </Button>
+                    </div>
             </Form>
         </Card>
     )
