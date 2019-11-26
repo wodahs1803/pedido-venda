@@ -16,9 +16,10 @@ state = {
     }
 
     componentDidUpdate() {
+        if(this.state.itemInfo.pages > 1) return;
         this.loaditems();
     }
-    
+
     loaditems = async (page = 1) => {
         const response = await api.get(`/item?page=${page}`);
 
@@ -52,7 +53,7 @@ state = {
     async deleteItem(id){
         if(window.confirm('Deseja Excluir este Produto?')){
             await api.delete(`item/${id}`);
-            this.loaditems();
+            this.loaditems(this.state.page);
         }
     }
 

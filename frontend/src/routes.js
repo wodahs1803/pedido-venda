@@ -3,7 +3,7 @@ import {BrowserRouter, Switch, Route} from 'react-router-dom';
 
 import Main from './pages/main';
 import { Item, ItemForm, ItemCreate } from './pages/item';
-import { Purchase, PurchaseForm, PurchaseCreate, PurchaseList } from './pages/purchase';
+import { Purchase, PurchaseForm, PurchaseCreate, PurchaseList, PurchaseAdd } from './pages/purchase';
 
 const Routes = () => (
     <BrowserRouter>
@@ -18,6 +18,7 @@ const Routes = () => (
             <Route exact path="/purchase/create" component={PurchaseCreate} />
             <Route exact path="/purchase/:id" component={PurchaseForm} />
             <Route exact path="/purchase/list/:id" component={PurchaseList} />
+            <Route exact path="/purchase/add/:id" component={PurchaseAdd} />
         </Switch>
     </BrowserRouter>
 );

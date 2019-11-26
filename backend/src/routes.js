@@ -15,6 +15,7 @@ routes.post('/purchase/list/:id', PurchaseController.manageItems);
 
 //Items
 routes.get('/item', ItemController.index);
+routes.get('/item/all', ItemController.getAll);
 routes.post('/item', ItemController.store);
 routes.get('/item/:id', ItemController.show);
 routes.put('/item/:id', ItemController.update);

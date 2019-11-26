@@ -3,7 +3,6 @@ import api from '../../services/api';
 import {Link, Redirect} from 'react-router-dom';
 import {Card, Button, Table, Form} from 'react-bootstrap/';
 import { FaArrowRight, FaArrowLeft, FaPlusCircle, FaSave } from 'react-icons/fa';
-import { isNull } from 'util';
 
 export class Purchase extends Component{
 state = {
@@ -17,6 +16,7 @@ state = {
     }
 
     componentDidUpdate() {
+        if(this.state.purchaseInfo.pages > 1) return;
         this.loadpurchases();
     }
 
@@ -53,7 +53,7 @@ state = {
     async deletePurchase(id){
         if(window.confirm('Deseja Excluir esta Compra?')){
             await api.delete(`purchase/${id}`);
-            this.loadpurchases();
+            this.loadpurchases(this.state.page);
         }
     }
 
@@ -85,6 +85,7 @@ state = {
                         <Link className="btn btn-outline-warning mr-5 mb-1" to={`/purchase/${purchase._id}`}>Editar</Link>
                         <Link className="btn btn-outline-danger mr-5 mb-1" onClick={() => this.deletePurchase(purchase._id)}>Excluir</Link>
                         <Link className="btn btn-outline-success mr-5 mb-1" to={`/purchase/list/${purchase._id}`}>Compra</Link>
+                        <Link className="btn btn-outline-primary mr-5 mb-1" to={`/purchase/add/${purchase._id}`}>Cadastrar Itens</Link>
                         </td>
                     </tr>
                 </tbody>
@@ -222,15 +223,15 @@ export class PurchaseList extends Component{
     
         componentDidMount() {
             this.loadpurchases();
-            
         }
     
         loadpurchases = async (page = 1) => {
             const { id } = this.props.match.params;
             const response = await api.get(`/purchase/list/${id}?page=${page}`);
+            if(response.data[0] === undefined) return;
             this.setState({ purchases: response.data[0].item_id  });
+            // console.log(response.data[0]);
             // console.log(this.state.purchases);
-            // console.log(response.data[0].item_id);
         };
     
         prevPage = () => {
@@ -287,5 +288,64 @@ export class PurchaseList extends Component{
                 </div>
             </Card>
         )
+        }
+}
+
+export class PurchaseAdd extends Component{
+
+    constructor(props){
+        super(props);
+        this.state = {
+            id: this.props.match.params,
+            items: [],
+            redirect:false
+        };
+    } 
+    
+        componentDidMount() {
+            this.loaditems();
+        }
+    
+        loaditems = async (page = 1) => {
+            const { id } = this.props.match.params;
+            const response = await api.get(`/item/all`);
+            if(response.data === undefined) return;
+            this.setState({ items: response.data  });
+
+            console.log(response.data);
+            // console.log(response.data[0]);
+            // console.log(this.state.purchases);
+        };
+    
+        render(){
+            const { items } = this.state;
+    
+        return (
+            <Card body>
+                <div>
+                    <Link className="btn btn-outline-primary mb-2" to="/purchase">
+                        <FaArrowLeft className="mr-1 mb-1" />Voltar
+                        </Link>
+                    </div>
+                <Card body>
+                    <Form>
+                        {items.map((item,index) => (
+                          <div key={item._id} className="mb-3">
+                            <div className="row">
+                            <Form.Check
+                              custom
+                              name={`item[${index}]`}
+                              type={'checkbox'}
+                              id={item._id}
+                              label={item.name}
+                            />
+                            <Form.Control name={`quantity[${index}]`} type="number" placeholder="Quantidade"/>
+                            </div>
+                          </div>
+                        ))}
+                    </Form>
+                    </Card>
+            </Card>
+            )
         }
 }

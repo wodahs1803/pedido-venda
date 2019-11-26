@@ -10,6 +10,12 @@ module.exports = {
         return res.json(items);
     },
 
+    async getAll(req, res){
+        const items = await Item.find();
+        
+        return res.json(items);
+    },
+
     async show(req, res){
         const item = await Item.findById(req.params.id);
 
