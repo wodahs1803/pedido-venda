@@ -88,7 +88,7 @@ state = {
                 <tbody key={item._id}>
                     <tr>
                       <td>{item.name}</td>
-                      <td>{item.price}</td>
+                      <td>${Number(item.price).toFixed(2)}</td>
                       <td>
                             <Link className="btn btn-outline-warning mr-5 mb-1" to={`/item/${item._id}`}>
                                 <FaPencilAlt className="mr-1 mb-1" />Editar

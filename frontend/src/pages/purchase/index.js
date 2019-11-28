@@ -320,9 +320,9 @@ export class PurchaseList extends Component{
                     <tbody key={purchase._id}>
                         <tr>
                             <td>{purchase.item_id[0].name}</td>
-                            <td>${purchase.item_id[0].price}</td>
+                            <td>${Number(purchase.item_id[0].price).toFixed(2)}</td>
                             <td>{purchase.quantity}</td>
-                            <td>${purchase.item_id[0].price * purchase.quantity}</td>
+                            <td>${Number(purchase.item_id[0].price * purchase.quantity).toFixed(2)}</td>
                             <td>
                                 <Link className="btn btn-outline-danger" onClick={() => this.deleteItem(purchase._id)}>
                                     <FaTrashAlt className="mr-1 mb-1" />Remover

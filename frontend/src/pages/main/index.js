@@ -11,7 +11,7 @@ export default class Main extends Component{
             <Card>
                 <Card.Header><h2 className="m-2"><FaHome className="mr-1 mb-2" />Bem Vindo!</h2></Card.Header>
                 <Card.Body>
-                    <h5 style={{textAlign:"center"}}>Não sei o que mais por aqui!</h5>
+                    <h5 style={{textAlign:"center"}}>Versão 1.0 Completa!</h5>
                     <div className="row justify-content-around">
                         <Link className="btn btn-outline-primary" to="/purchase">
                             <FaUserPlus className="mr-1 mb-2" />Pedidos
