@@ -11,7 +11,8 @@ routes.get('/purchase/:id', PurchaseController.show);
 routes.put('/purchase/:id', PurchaseController.update);
 routes.delete('/purchase/:id', PurchaseController.destroy);
 routes.get('/purchase/list/:id', PurchaseController.listItems);
-routes.post('/purchase/list/:id', PurchaseController.manageItems);
+routes.post('/purchase/list', PurchaseController.addItems);
+routes.delete('/purchase/list/:id', PurchaseController.delItems);
 
 //Items
 routes.get('/item', ItemController.index);

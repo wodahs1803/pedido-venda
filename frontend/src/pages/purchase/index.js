@@ -5,7 +5,7 @@ import {Card, Button, Table, Form} from 'react-bootstrap/';
 import {
         FaArrowRight, FaArrowLeft, FaPlusCircle, 
         FaSave, FaPortrait, FaPencilAlt, 
-        FaTrashAlt, FaShoppingCart, FaCartPlus, FaHammer
+        FaTrashAlt, FaShoppingCart, FaCartPlus
         } from 'react-icons/fa';
 
 export class Purchase extends Component{
@@ -202,7 +202,7 @@ export class PurchaseForm extends Component{
         });
     } 
 
-    async handleSubmit(e) {
+    async handleSubmit() {
         api.put(`/purchase/${this.state.id}`, {client: this.state.client, address: this.state.address}).then(alert('Pedido Atualizado com Sucesso'));
         this.setState({redirect: true});
     }
@@ -243,7 +243,11 @@ export class PurchaseList extends Component{
 
     constructor(props){
         super(props);
-        this.state = {purchases: [], redirect:false};
+        this.state = {
+            id: [],
+            purchases: [],
+            redirect:false
+        };
     } 
     
         componentDidMount() {
@@ -253,14 +257,14 @@ export class PurchaseList extends Component{
         loadpurchases = async (page = 1) => {
             const { id } = this.props.match.params;
             const response = await api.get(`/purchase/list/${id}?page=${page}`);
-            if(response.data[0] === undefined) return;
-            this.setState({ purchases: response.data[0].item_id  });
-            // console.log(response.data[0]);
-            // console.log(this.state.purchases);
+            if(response.data === undefined) return;
+
+            console.log(response.data);
+            this.setState({ id: id, purchases: response.data  });
         };
     
         prevPage = () => {
-            const {page, purchaseInfo} = this.state;
+            const { page } = this.state;
     
             if(page === 1) return;
     
@@ -279,14 +283,26 @@ export class PurchaseList extends Component{
             this.loadpurchases(pageNumber);
         }
     
+        async deleteItem(id){
+            if(window.confirm('Deseja Excluir este Item?')){
+                await api.delete(`purchase/list/${id}`);
+                this.loadpurchases();
+            }
+        }
+
         render(){
             const { purchases } = this.state;
     
         return (
-            <Card body>
-                <div>
-                    <Link className="btn btn-outline-secondary mb-2" to="/purchase">
+            <Card>
+            <Card.Header><h3><FaShoppingCart className="mr-2 mb-1" />Detalhes da Compra</h3></Card.Header>
+            <Card.Body>
+                <div className="row justify-content-between mr-1 ml-1 mb-2">
+                    <Link className="btn btn-outline-secondary mb-1" to="/purchase">
                         <FaArrowLeft className="mr-1 mb-1" />Voltar
+                        </Link>
+                    <Link className="btn btn-outline-primary mb-1" to={`/purchase/add/${this.state.id}`}>
+                        <FaCartPlus className="mr-1 mb-1" />Cadastrar Itens
                         </Link>
                     </div>
                 <div style={{overflowX: "auto"}}>
@@ -297,20 +313,27 @@ export class PurchaseList extends Component{
                           <th>Preço</th>
                           <th>Quantidade</th>
                           <th>Preço Total</th>
+                          <th>Remover</th>
                         </tr>
                     </thead>
                     {purchases.map(purchase => (
                     <tbody key={purchase._id}>
                         <tr>
-                            <td>{purchase.id.name}</td>
-                            <td>${purchase.id.price}</td>
+                            <td>{purchase.item_id[0].name}</td>
+                            <td>${purchase.item_id[0].price}</td>
                             <td>{purchase.quantity}</td>
-                            <td>${purchase.id.price * purchase.quantity}</td>
+                            <td>${purchase.item_id[0].price * purchase.quantity}</td>
+                            <td>
+                                <Link className="btn btn-outline-danger" onClick={() => this.deleteItem(purchase._id)}>
+                                    <FaTrashAlt className="mr-1 mb-1" />Remover
+                                    </Link>
+                            </td>
                         </tr>
                     </tbody>
                     ))}
                 </Table>
                 </div>
+            </Card.Body>
             </Card>
         )
         }
@@ -321,13 +344,10 @@ export class PurchaseAdd extends Component{
     constructor(props){
         super(props);
         this.state = {
-            id: this.props.match.params,
+            id: [],
             items: [],
-            purchase:{
-                item: [''],
-                quantity: ['']
-            },
-            redirect:false
+            item: [],
+            quantity: [],
         };
         this.onChangeItem = this.onChangeItem.bind(this);
         this.onChangeQuantity = this.onChangeQuantity.bind(this);
@@ -338,40 +358,32 @@ export class PurchaseAdd extends Component{
             this.loaditems();
         }
     
-        loaditems = async (page = 1) => {
+        loaditems = async () => {
             const { id } = this.props.match.params;
             const response = await api.get(`/item/all`);
             if(response.data === undefined) return;
-            this.setState({ items: response.data  });
+            this.setState({ id: id, items: response.data  });
 
             console.log(response.data);
-            // console.log(response.data[0]);
-            // console.log(this.state.purchases);
         }; 
     
-        onChangeItem(e, i){
+        onChangeItem(e){
             this.setState({
-                purchase:{
-                    item: e.target.value
-                }
+                item: e.target.value
             });
         }
 
-        onChangeQuantity(e, i){
+        onChangeQuantity(e){
             this.setState({
-                purchase:{
-                    quantity: e.target.value
-                }
+                quantity: e.target.value
             });
         }
     
         async handleSubmit(e) {
-            console.log(e.target);
-            console.log(this.state.purchase);
-            console.log(this.state.purchase.item);
-            console.log(this.state.purchase.quantity);
-            // api.put(`/purchase/${this.state.id}`, {client: this.state.client, address: this.state.address}).then(alert('Pedido Atualizado com Sucesso'));
-            // this.setState({redirect: true});
+            console.log(this.state.item);
+            console.log(this.state.quantity);
+            console.log(this.state.id);
+            api.post(`/purchase/list`, {item_id: this.state.item, purchase_id: this.state.id, quantity: this.state.quantity}).then(alert('Produto Adicionado!'));
         }
     
         render(){
@@ -379,32 +391,31 @@ export class PurchaseAdd extends Component{
     
         return (
             <Card>
-            <Card.Header><h1><b><FaHammer className="mr-2 mb-2" />EM CONSTRUÇÃO</b></h1></Card.Header>
+            <Card.Header><h3><b><FaCartPlus className="mr-2 mb-1" />Selecione um Produto</b></h3></Card.Header>
             <Card.Body>
-                <div className="row justify-content-between ml-1 mr-1 mt-2 mb-2">
-                    <Link className="btn btn-outline-secondary mb-1" to="/purchase">
+                <div className="row justify-content-between ml-1 mr-1 mb-2">
+                    <Link className="btn btn-outline-secondary mb-1" to={`/purchase/list/${this.state.id}`}>
                         <FaArrowLeft className="mr-1 mb-1" />Voltar
                         </Link>
                     </div>
-                <Card body>
+                <Card body style={{backgroundColor: "#f7f7f7"}}>
                     <Form onSubmit={this.handleSubmit}>
-                        {items.map((item,index) => (
-                          <div key={item._id} className="mb-3">
-                            <div className="row">
-                            <Form.Check
-                              custom
-                              name={`item[${index}]`}
-                              type={'checkbox'}
-                              id={item._id}
-                              value={item._id}
-                              label={item.name}
-                              onChange={(event) => this.onChangeItem(event,index)}/>
-                            <Form.Control name={`quantity[${index}]`} type="number" placeholder="Quantidade"
-                            onChange={(event) => this.onChangeQuantity(event,index)}/>
+                    <Form.Group className="row">
+                        <div className="col">
+                            <Form.Label for="item">Selecione um Item</Form.Label>
+                                <Form.Control required id="item" as="select" onChange={this.onChangeItem}>
+                                        <option value="" label="Selecione um Item"/>
+                                        {items.map(item => (
+                                            <option value={item._id} label={item.name}/>
+                                        ))}
+                                    </Form.Control>
                             </div>
-                          </div>
-                        ))}
-                        <Button disabled="true" variant="outline-primary mb-1" type="submit">
+                        <div className="col">
+                            <Form.Label for="quantity">Quantidade</Form.Label>
+                                <Form.Control required id="quantity" type="number" step="1" placeholder="Quantidade" onChange={this.onChangeQuantity}/>
+                            </div>
+                        </Form.Group>
+                        <Button variant="outline-primary mb-1" type="submit">
                             <FaCartPlus className="mr-1 mb-1" />Cadastrar
                         </Button>
                     </Form>

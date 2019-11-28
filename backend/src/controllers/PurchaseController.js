@@ -37,8 +37,8 @@ module.exports = {
 
     async listItems(req, res){
         try {
-        const { page = 1 } = req.query;
-        const itemPurchase = await ItemPurchase.find({purchase_id: req.params.id}).populate('item_id.id').select('item_id');
+        // const { page = 1 } = req.query;
+        const itemPurchase = await ItemPurchase.find({purchase_id: req.params.id}).populate('item_id');
         
         return res.json(itemPurchase);
         } catch (error) {
@@ -46,10 +46,15 @@ module.exports = {
         }
     },
 
-    async manageItems(req, res){
-        const itemPurchaseDel = await ItemPurchase.deleteMany({purchase_id: req.params.id});
+    async addItems(req, res){
         const itemPurchase = await ItemPurchase.create(req.body);
         
+        return res.json(itemPurchase);
+    },
+
+    async delItems(req, res){
+        const itemPurchase = await ItemPurchase.findByIdAndRemove(req.params.id);
+
         return res.json(itemPurchase);
     },
 
